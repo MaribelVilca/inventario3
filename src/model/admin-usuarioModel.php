@@ -31,8 +31,8 @@ class UsuarioModel
         return $sql;
     }
     public function updateResetPassword($id,$token,$estado){
-        $sql = $this->conexion->query("UPDATE usuarios SET token_password='$token',reset_password='$estado' WHERE id='$id'");
-        return $sql;
+        $sql = $this->conexion->query("UPDATE usuarios SET  token_password ='$token',reset_password='$estado' WHERE id='$id'");
+        return $sql;  
     }
 
     public function buscarUsuarioById($id)

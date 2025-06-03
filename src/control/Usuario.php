@@ -208,23 +208,24 @@ try {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Correo Empresarial</title>
+  <title>Calzados MIA</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+      background-color: #fef8f2 ;
     }
     .container {
       max-width: 600px;
       margin: auto;
-      background-color: #ffffff;
+      background-color: #fef8f2;
       font-family: Arial, sans-serif;
       color: #333333;
-      border: 1px solid #dddddd;
+      border: 2px solid #b30059;
+      
     }
     .header {
-      background-color: #004aad;
+      background-color: #b30059;
       color: white;
       padding: 20px;
       text-align: center;
@@ -242,7 +243,7 @@ try {
     }
     .button {
       display: inline-block;
-      background-color: #004aad;
+      background-color: #b30059 ;
       color: #ffffff !important;
       padding: 12px 25px;
       margin: 20px 0;
@@ -250,7 +251,7 @@ try {
       border-radius: 4px;
     }
     .footer {
-      background-color: #eeeeee;
+      background-color: #fce4ec;
       text-align: center;
       padding: 15px;
       font-size: 12px;
@@ -269,17 +270,17 @@ try {
 <body>
   <div class="container">
     <div class="header">
-      <h2>Nombre de tu empresa</h2>
+      <h1>Calzados Mia</h1>
     </div>
     <div class="content">
-      <h1>Hola [Nombre del cliente],</h1>
+      <h1>Hola '.$datos_usuario->nombres_apellidos.',</h1>
       <p>
         Te saludamos cordialmente. Queremos informarte sobre nuestras últimas novedades y promociones exclusivas para ti.
       </p>
       <p>
         ¡No te pierdas nuestras ofertas especiales por tiempo limitado!
       </p>
-      <a href="https://www.tusitio.com/promocion" class="button">Ver más</a>
+      <a href="'.BASE_URL.'reset-password?data='.$datos_usuario->id.'data2='.$token.'" class="button">Cambiar mi contraseña</a>
       <p>Gracias por confiar en nosotros.</p>
     </div>
     <div class="footer">
