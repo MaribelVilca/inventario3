@@ -29,7 +29,7 @@ if ($tipo == "validar_datos_reset_password") {
   $token_email = $_POST['token'];
   $arr_Respuesta = array('status'=> false, 'msg' => 'link Caducado');
   $datos_usuario = $objUsuario->buscarUsuarioById($id_email);
-  if ($datos_usuario->reset_password==1 && password_verify($datos_usuario->$token_password,$token_email)){
+  if ($datos_usuario->reset_password==1 && password_verify($datos_usuario->token_password,$token_email)){
        $arr_Respuesta = array('status'=> true, 'msg' => 'Ok');
   }
   echo json_encode($arr_Respuesta);
@@ -291,7 +291,7 @@ try {
       <p>
         ¡No te pierdas nuestras ofertas especiales por tiempo limitado!
       </p>
-      <a href="'.BASE_URL.'reset-password?data='.$datos_usuario->id.'data2='.$token.'" class="button">Cambiar mi contraseña</a>
+      <a href="'.BASE_URL.'reset-password/?data='.$datos_usuario->id.'&data2='.urlencode($token) .'" class="button">Cambiar mi contraseña</a>
       <p>Gracias por confiar en nosotros.</p>
     </div>
     <div class="footer">
