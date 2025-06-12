@@ -203,10 +203,7 @@ async function validar_datos_reset_password() {
 
     }
 }
-    async function validar_datos_reset_password(){
 
-    
-}
 function validar_imputs_password() {
     let pass1 = document.getElementById('password').value;
     let pass2 = document.getElementById('password1').value;
@@ -233,10 +230,16 @@ function validar_imputs_password() {
     actualizar_password();
 }
     
-
-    
 }
 async function actualizar_password(){
+    console.log("registrado");
+    Swal.fire({
+        type: 'exito',
+        title: 'Error',
+        text: 'Lregistrado correctamente',
+        footer: '',
+        timer: 1500
+});
  //enviar informaacion de password y id al controlador usuario
  //recibir informacion y incriptar lanueva contraseña
  //guardar en base de datos y actualizar campode rest_password y token_password

@@ -92,15 +92,15 @@
 
 <body>
     <input type="hidden" id="data" value="<?php echo $_GET['data'] ?>">
-    <input type="hidden" id="data2" value="<?php echo urlencode($_GET['data2']);?>">
+    <input type="hidden" id="data2" value="<?php echo urldecode($_GET['data2']);?>">
   <div class="login-container">
     <h1>Iniciar Sesión</h1>
     <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="" width="100%">
     <h4>Sistema de Control de Inventario</h4>
     <form id="frm_reset_password">
       <input type="text" name="password" id="password" placeholder="Nueva Contraseña" required>
-      <input type="text" name="password" id="password" placeholder="Confirmar Contraseña" required>
-      <button type="button"onclick="validar_imputs_password();">Actualizar Contraseña</button>
+      <input type="text" name="password1" id="password1" placeholder="Confirmar Contraseña" required>
+      <button type="button" onclick="validar_imputs_password();">Actualizar Contraseña</button>
     </form>
     
   </div>
