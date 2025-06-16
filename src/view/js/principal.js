@@ -227,21 +227,47 @@ function validar_imputs_password() {
     });
     return;
 }else {
-    actualizar_password();
+    actualizar_password(pass1);
 }
     
 }
-async function actualizar_password(){
-    console.log("registrado");
-    Swal.fire({
-        type: 'exito',
-        title: 'Error',
-        text: 'Lregistrado correctamente',
-        footer: '',
-        timer: 1500
-});
+async function actualizar_password(paswor){
+    let id = document.getElementById('data').value;
+
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('password', paswor);
+    formData.append('sesion', '');
+    formData.append('token', '');
+
+    try {
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=cambiarPassword', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: formData
+        });
+        let json = await respuesta.json();
+        if (json.status) {
+            Swal.fire({
+                type: 'success',
+                title: 'Actualizado',
+                text: "Actualizado correctamente",
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 1000
+            });
+            //location.replace(base_url + "login");
+            
+        }
+
+    }catch (e) {
+        console.log("Error" + e);
+
+    }
  //enviar informaacion de password y id al controlador usuario
- //recibir informacion y incriptar lanueva contraseña
+ //recibir informacion y incriptar la nueva contraseña
  //guardar en base de datos y actualizar campode rest_password y token_password
  //modificar a usuario sobre el estado del proceso
 }
+
