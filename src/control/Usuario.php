@@ -30,7 +30,7 @@ if($tipo == "cambiarPassword"){
     if($_POST){
 
       $id_usu = $_POST['id'];
-      $nuevaContrasena = ['password'];
+      $nuevaContrasena = $_POST['password'];
       $contraHash = password_hash($nuevaContrasena, PASSWORD_DEFAULT);
       
       if ($id_usu == "" || $nuevaContrasena == "") {
@@ -43,10 +43,10 @@ if($tipo == "cambiarPassword"){
           $estadov = 0;
           $resetearCampos = $objUsuario->updateResetPassword($id_usu,$tokenvacio,$estadov);
            if($resetearCampos){
-            $arr_Respuesta = array('status' => true, 'mensaje' => 'Contrasenaa cambiada con exito');
+            $arr_Respuesta = array('status' => true, 'mensaje' => 'Contrasena cambiada con exito');
            }
         } else {
-           $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al actualizar contrasema');
+           $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al actualizar contrasena');
             
         }
     }
