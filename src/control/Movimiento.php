@@ -218,14 +218,17 @@ if ($tipo == 'buscar_movimiento_id'){
         $arrIes= $objInstitucion->buscarInstitucionById($arrMovimiento->id_ies);
         $arrDetalle = $objMovimiento->buscarDetalle_MovimientoByMovimiento($id_movimiento);
         $arr_bienes = array();
+        
         foreach ($arrDetalle as $bien){
-             $id_bien = $bien->id_bien;
-             $res_bien = $objBien->buscarBienById($id_bien);
+             $id_Bien = $bien->id_bien;
+             $res_bien = $objBien->buscarBienById($id_Bien);
+             array_push($arr_bienes, $res_bien);
         }
         $arr_Respuesta['movimiento'] = $arrMovimiento;
         $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
         $arr_Respuesta['amb_destino'] = $arrAmbDestino;
         $arr_Respuesta['datos_usuario'] = $arrUsuario;
+        $arr_Respuesta['bienes'] = $arr_bienes;
         $arr_Respuesta['datos_ies'] = $arrIes;
         $arr_Respuesta['detalle'] = $arrDetalle;
         $arr_Respuesta['status'] = true;
@@ -233,4 +236,5 @@ if ($tipo == 'buscar_movimiento_id'){
     }
     echo json_encode($arr_Respuesta);
 }
+//enviar un array dentro de arrayrespuesta vista todos los atributos//
 
