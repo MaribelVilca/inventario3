@@ -29,5 +29,161 @@ if (!isset($ruta[1]) || $ruta[1]=="") {
      echo "cURL Error #:" . $err; // mostramos el error
  } else {
     $respuesta = json_decode($response); 
-    print_r($respuesta);
+    //print_r($respuesta);
+ 
+    ?>
+    <!--
+   <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Papeleta de Rotación de Bienes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h2 {
+      text-align: center;
+      text-transform: uppercase;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    td, th {
+      border: 1px solid black;
+      padding: 6px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .info {
+      margin-top: 20px;
+    }
+    .info p {
+      margin: 5px 0;
+    }
+    .motivo {
+      margin: 20px 0;
+    }
+    .firmas {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .firmas div {
+      text-align: center;
+      width: 40%;
+    }
+    .footer {
+      margin-top: 40px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>PAPELETA DE ROTACIÓN DE BIENES</h2>
+
+  <div class="info">
+    <p><strong>ENTIDAD:</strong> DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO</p>
+    <p><strong>ÁREA:</strong> OFICINA DE ADMINISTRACIÓN</p>
+    <p><strong>ORIGEN:</strong> <?php echo $respuesta ->amb_origen->codigo. ' - ' .$respuesta -> amb_origen->detalle;?></p>
+    <p><strong>DESTINO:</strong> <?php echo $respuesta ->amb_destino->codigo. ' - ' .$respuesta -> amb_destino->detalle;?></p>
+    <p><strong>MOTIVO (*):</strong> <?php echo $respuesta ->movimiento ->descripcion;?></p>
+  </div>
+
+  <div class="motivo">
+    <p><strong>MOTIVO (*):</strong> ________________</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ITEM</th>
+        <th>CÓDIGO PATRIMONIAL</th>
+        <th>NOMBRE DEL BIEN</th>
+        <th>MARCA</th>
+        <th>COLOR</th>
+        <th>MODELO</th>
+        <th>ESTADO</th>
+      </tr>
+    </thead>
+    <?php
+    $contador = 1;
+    foreach ($respuesta->detalle as $bien) {
+         echo "<tr>";
+         echo "<tr>".$contador ."</td>";
+         echo "<tr>".$bien->denominacion ."</td>";
+         echo "<tr>";
+         $contador+=1;
+         foreach ($respuesta->detalle as $bien) {
+            echo "<tr>";
+            echo "<td>".$contador ."</td>";
+            echo "<td>".$bien->cod_patrimonial ."</td>";
+            echo "<td>".$bien->denominacion ."</td>";
+            echo "<td>".$bien->marca ."</td>";
+            echo "<td>".$bien->modelo ."</td>";
+            echo "<td>".$bien->color ."</td>";
+            echo "<td>".$bien->estado_conservacion ."</td>";
+            echo "<tr>";
+               
+
+         }
+    }
+    ?>
+    <tbody>
+      <tr>
+        <td>01</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>02</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <p>Ayacucho, _ de ____ del 2024</p>
+  </div>
+
+  <div class="firmas">
+    <div>
+      <p>_________</p>
+      <p>ENTREGUE CONFORME</p>
+    </div>
+    <div>
+      <p>_________</p>
+      <p>RECIBÍ CONFORME</p>
+    </div>
+  </div>
+
+</body>
+</html>
+   -->
+    <?php
+    require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
+    $pdf =new TCPDF();
+    //set document informacion
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Anibal yucra');
+    $pdf->SetTitle('Reporte de Movimientos');
+    //
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+    
+    //asignar
+
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
  }
