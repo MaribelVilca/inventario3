@@ -6,16 +6,15 @@ $curl = curl_init();
 $postData = array(
     'sesion' => $_SESSION['sesion_id'],
     'token' => $_SESSION['sesion_token'],
-    'ies' => $_SESSION['ies'] ?? 1, // ID de la institución desde la sesión
     'pagina' => 1,
     'cantidad_mostrar' => 10000, // Gran cantidad para obtener todos los registros
+    'busqueda_tabla_nombre' => '',
     'busqueda_tabla_codigo' => '',
-    'busqueda_tabla_ambiente' => '',
-    'busqueda_tabla_denominacion' => ''
+    'busqueda_tabla_ruc' => ''
 );
 
 curl_setopt_array($curl, array(
-    CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listar_bienes_ordenados_tabla",
+    CURLOPT_URL => BASE_URL_SERVER . "src/control/Institucion.php?tipo=listar_instituciones_ordenados_tabla",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_ENCODING => "",
@@ -45,7 +44,7 @@ if ($err) {
 $responseData = json_decode($response, true);
 
 if (!$responseData || !$responseData['status']) {
-    echo "Error: No se pudieron obtener los datos de bienes.";
+    echo "Error: No se pudieron obtener los datos de instituciones.";
     exit;
 }
 
@@ -63,28 +62,24 @@ $spreadsheet = new Spreadsheet();
 $spreadsheet->getProperties()
     ->setCreator("Sistema de Gestión de Bienes")
     ->setLastModifiedBy("Sistema de Gestión de Bienes")
-    ->setTitle("Reporte de Bienes")
-    ->setDescription("Listado completo de bienes registrados en el sistema");
+    ->setTitle("Reporte de Instituciones")
+    ->setDescription("Listado completo de instituciones registradas en el sistema");
 
 $activeWorksheet = $spreadsheet->getActiveSheet();
-$activeWorksheet->setTitle('Reporte de Bienes');
+$activeWorksheet->setTitle('Reporte de Instituciones');
 
 // Definir los encabezados de las columnas
 $headers = [
     'A' => 'ID',
-    'B' => 'Código Patrimonial',
-    'C' => 'Denominación',
-    'D' => 'Marca',
-    'E' => 'Modelo',
-    'F' => 'Tipo',
-    'G' => 'Color',
-    'H' => 'Serie',
-    'I' => 'Dimensiones',
-    'J' => 'Valor',
-    'K' => 'Situación',
-    'L' => 'Estado de Conservación',
-    'M' => 'Observaciones',
-    'N' => 'ID Ambiente'
+    'B' => 'Código Modular',
+    'C' => 'RUC',
+    'D' => 'Nombre de la Institución',
+    'E' => 'ID Beneficiario',
+    'F' => 'Nombre Beneficiario',
+    'G' => 'Correo Beneficiario',
+    'H' => 'Teléfono Beneficiario',
+    'I' => 'Total de Ambientes',
+    'J' => 'Total de Bienes'
 ];
 
 // Configurar encabezados con mejor formato
@@ -112,31 +107,29 @@ foreach ($headers as $columna => $titulo) {
         ->getStartColor()->setRGB('E8E8E8');
 }
 
-// Llenar los datos de los bienes con mejor formato
-$bienes = $responseData['contenido'] ?? [];
+// Llenar los datos de las instituciones con mejor formato
+$instituciones = $responseData['contenido'] ?? [];
 $fila = 2; // Comenzar desde la fila 2 (después de los encabezados)
 
-foreach ($bienes as $bien) {
-    $activeWorksheet->setCellValue('A' . $fila, $bien['id'] ?? '');
-    $activeWorksheet->setCellValue('B' . $fila, $bien['cod_patrimonial'] ?? '');
-    $activeWorksheet->setCellValue('C' . $fila, $bien['denominacion'] ?? '');
-    $activeWorksheet->setCellValue('D' . $fila, $bien['marca'] ?? '');
-    $activeWorksheet->setCellValue('E' . $fila, $bien['modelo'] ?? '');
-    $activeWorksheet->setCellValue('F' . $fila, $bien['tipo'] ?? '');
-    $activeWorksheet->setCellValue('G' . $fila, $bien['color'] ?? '');
-    $activeWorksheet->setCellValue('H' . $fila, $bien['serie'] ?? '');
-    $activeWorksheet->setCellValue('I' . $fila, $bien['dimensiones'] ?? '');
+foreach ($instituciones as $institucion) {
+    $activeWorksheet->setCellValue('A' . $fila, $institucion['id'] ?? '');
+    $activeWorksheet->setCellValue('B' . $fila, $institucion['cod_modular'] ?? '');
+    $activeWorksheet->setCellValue('C' . $fila, $institucion['ruc'] ?? '');
+    $activeWorksheet->setCellValue('D' . $fila, $institucion['nombre'] ?? '');
+    $activeWorksheet->setCellValue('E' . $fila, $institucion['beneficiario'] ?? '');
+    $activeWorksheet->setCellValue('F' . $fila, $institucion['nombre_beneficiario'] ?? '');
+    $activeWorksheet->setCellValue('G' . $fila, $institucion['correo_beneficiario'] ?? '');
+    $activeWorksheet->setCellValue('H' . $fila, $institucion['telefono_beneficiario'] ?? '');
     
-    // Formatear valor como número
-    $valor = floatval($bien['valor'] ?? 0);
-    $activeWorksheet->setCellValue('J' . $fila, $valor);
-    $activeWorksheet->getStyle('J' . $fila)->getNumberFormat()
-        ->setFormatCode('#,##0.00');
+    // Formatear números
+    $totalAmbientes = intval($institucion['total_ambientes'] ?? 0);
+    $totalBienes = intval($institucion['total_bienes'] ?? 0);
     
-    $activeWorksheet->setCellValue('K' . $fila, $bien['situacion'] ?? '');
-    $activeWorksheet->setCellValue('L' . $fila, $bien['estado_conservacion'] ?? '');
-    $activeWorksheet->setCellValue('M' . $fila, $bien['observaciones'] ?? '');
-    $activeWorksheet->setCellValue('N' . $fila, $bien['id_ambiente'] ?? '');
+    $activeWorksheet->setCellValue('I' . $fila, $totalAmbientes);
+    $activeWorksheet->setCellValue('J' . $fila, $totalBienes);
+    
+    $activeWorksheet->getStyle('I' . $fila)->getNumberFormat()->setFormatCode('#,##0');
+    $activeWorksheet->getStyle('J' . $fila)->getNumberFormat()->setFormatCode('#,##0');
     
     // Aplicar formato a las celdas de datos
     foreach ($headers as $columna => $titulo) {
@@ -149,7 +142,7 @@ foreach ($bienes as $bien) {
             ->setSize(10);
         
         // Alineación específica por columna
-        if ($columna == 'A' || $columna == 'J' || $columna == 'N') {
+        if ($columna == 'A' || $columna == 'E' || $columna == 'I' || $columna == 'J') {
             $activeWorksheet->getStyle($columna . $fila)->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_CENTER);
         } else {
@@ -166,19 +159,15 @@ foreach ($bienes as $bien) {
 
 // Ajustar el ancho de las columnas de forma específica
 $activeWorksheet->getColumnDimension('A')->setWidth(8);   // ID
-$activeWorksheet->getColumnDimension('B')->setWidth(20);  // Código Patrimonial
-$activeWorksheet->getColumnDimension('C')->setWidth(35);  // Denominación
-$activeWorksheet->getColumnDimension('D')->setWidth(15);  // Marca
-$activeWorksheet->getColumnDimension('E')->setWidth(15);  // Modelo
-$activeWorksheet->getColumnDimension('F')->setWidth(12);  // Tipo
-$activeWorksheet->getColumnDimension('G')->setWidth(10);  // Color
-$activeWorksheet->getColumnDimension('H')->setWidth(15);  // Serie
-$activeWorksheet->getColumnDimension('I')->setWidth(15);  // Dimensiones
-$activeWorksheet->getColumnDimension('J')->setWidth(12);  // Valor
-$activeWorksheet->getColumnDimension('K')->setWidth(12);  // Situación
-$activeWorksheet->getColumnDimension('L')->setWidth(18);  // Estado Conservación
-$activeWorksheet->getColumnDimension('M')->setWidth(30);  // Observaciones
-$activeWorksheet->getColumnDimension('N')->setWidth(12);  // ID Ambiente
+$activeWorksheet->getColumnDimension('B')->setWidth(18);  // Código Modular
+$activeWorksheet->getColumnDimension('C')->setWidth(15);  // RUC
+$activeWorksheet->getColumnDimension('D')->setWidth(40);  // Nombre Institución
+$activeWorksheet->getColumnDimension('E')->setWidth(12);  // ID Beneficiario
+$activeWorksheet->getColumnDimension('F')->setWidth(30);  // Nombre Beneficiario
+$activeWorksheet->getColumnDimension('G')->setWidth(35);  // Correo
+$activeWorksheet->getColumnDimension('H')->setWidth(15);  // Teléfono
+$activeWorksheet->getColumnDimension('I')->setWidth(12);  // Total Ambientes
+$activeWorksheet->getColumnDimension('J')->setWidth(12);  // Total Bienes
 
 // Configurar altura de filas
 $activeWorksheet->getDefaultRowDimension()->setRowHeight(20);
@@ -186,8 +175,8 @@ $activeWorksheet->getRowDimension(1)->setRowHeight(25); // Fila de encabezados m
 
 // Agregar información adicional
 $filaInfo = $fila + 2;
-$activeWorksheet->setCellValue('A' . $filaInfo, 'Total de bienes registrados:');
-$activeWorksheet->setCellValue('B' . $filaInfo, count($bienes));
+$activeWorksheet->setCellValue('A' . $filaInfo, 'Total de instituciones registradas:');
+$activeWorksheet->setCellValue('B' . $filaInfo, count($instituciones));
 $activeWorksheet->getStyle('A' . $filaInfo)->getFont()->setBold(true);
 $activeWorksheet->getStyle('B' . $filaInfo)->getFont()->setBold(true);
 
@@ -196,9 +185,29 @@ $activeWorksheet->setCellValue('A' . $filaInfo, 'Fecha de generación:');
 $activeWorksheet->setCellValue('B' . $filaInfo, date('d/m/Y H:i:s'));
 $activeWorksheet->getStyle('A' . $filaInfo)->getFont()->setBold(true);
 
+// Calcular totales generales
+$totalAmbientesGeneral = 0;
+$totalBienesGeneral = 0;
+foreach ($instituciones as $institucion) {
+    $totalAmbientesGeneral += intval($institucion['total_ambientes'] ?? 0);
+    $totalBienesGeneral += intval($institucion['total_bienes'] ?? 0);
+}
+
+$filaInfo++;
+$activeWorksheet->setCellValue('A' . $filaInfo, 'Total general de ambientes:');
+$activeWorksheet->setCellValue('B' . $filaInfo, $totalAmbientesGeneral);
+$activeWorksheet->getStyle('A' . $filaInfo)->getFont()->setBold(true);
+$activeWorksheet->getStyle('B' . $filaInfo)->getFont()->setBold(true);
+
+$filaInfo++;
+$activeWorksheet->setCellValue('A' . $filaInfo, 'Total general de bienes:');
+$activeWorksheet->setCellValue('B' . $filaInfo, $totalBienesGeneral);
+$activeWorksheet->getStyle('A' . $filaInfo)->getFont()->setBold(true);
+$activeWorksheet->getStyle('B' . $filaInfo)->getFont()->setBold(true);
+
 // Configurar headers para descarga directa
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="reporte_bienes.xlsx"');
+header('Content-Disposition: attachment;filename="reporte_instituciones.xlsx"');
 header('Cache-Control: max-age=0');
 header('Expires: 0');
 header('Pragma: public');
@@ -207,4 +216,4 @@ header('Pragma: public');
 $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
 exit;
-
+?>

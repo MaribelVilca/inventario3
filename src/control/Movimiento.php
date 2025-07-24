@@ -227,16 +227,17 @@ if ($tipo == "datos_registro") {
     }
     echo json_encode($arr_Respuesta);
 }
-
-if ($tipo == "listarBienes") {
-        $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
-    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)){
-        $arr_Bienes = $objBien->listarBienes();
-        $arr_Respuesta['bienes'] = $arr_Bienes;
+if($tipo == "ObtenerTodosBienes"){
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        $arr_bienes = $objBien->ObtenerBienes();
+ 
+        $arr_Respuesta['bienes'] = $arr_bienes;
         $arr_Respuesta['status'] = true;
-        $arr_Respuesta['msg'] = 'correcto';
-    } 
-    echo json_encode($arr_Respuesta);
-}
+        $arr_Respuesta['msg'] = 'listado correcto';
+ 
+     }
+     echo json_encode($arr_Respuesta);
+ }
 //enviar un array dentro de arrayrespuesta vista todos los atributos//
 

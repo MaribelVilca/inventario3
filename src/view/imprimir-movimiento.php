@@ -1,271 +1,173 @@
 <?php
+
+// Obtener ID de movimiento desde la URL
 $ruta = explode("/", $_GET['views']);
-if (!isset($ruta[1]) || $ruta[1]=="") {
-    header("location: " .BASE_URL."movimientos");
-}
-require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
-class MYPDF extends TCPDF {
-  public function Header() {
-    // --- RUTA ABSOLUTA A LAS IMÁGENES JPG ---
-    $image_path_dre = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT72gURRvO9EMLPg4EM7_0Ttl2u52Xigbe6IA&s';
-    $image_path_goba = 'https://dreayacucho.gob.pe/storage/directory/ZOOEA2msQPiXYkJFx4JLjpoREncLFn-metabG9nby5wbmc=-.webp';
-
-    // --- LOGO IZQUIERDO ---
-    $this->Image($image_path_dre, 15, 8, 25, 0, 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-    
-    // --- TEXTOS DEL CENTRO ---
-    $this->SetFont('helvetica', 'B', 10);
-    $this->SetY(10);
-    $this->Cell(0, 5, 'GOBIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
-    
-    $this->SetFont('helvetica', 'B', 12);
-    $this->Cell(0, 5, 'DIRECCIÓN REGIONAL DE EDUCACIÓN DE AYACUCHO', 0, 1, 'C');
-
-    $this->SetFont('helvetica', '', 9);
-    $this->Cell(0, 5, 'DIRECCION DE ADMINISTRACION', 0, 1, 'C');
-    
-    // --- DIBUJO DE LÍNEAS CON FUNCIONES NATIVAS (LA SOLUCIÓN) ---
-
-    // Parámetros para las líneas
-    $lineWidth = 140; // Ancho de las líneas en mm. Ajústalo si es necesario.
-    $pageWidth = $this->getPageWidth();
-    $x = ($pageWidth - $lineWidth) / 2; // Calcula la posición X para centrar las líneas
-    
-    // Línea superior (delgada, más oscura)
-    $y1 = 29; // Posición Y (distancia desde la parte superior de la página)
-    $this->SetFillColor(41, 91, 162); // Color #295BA2 en RGB
-    // Rect(x, y, ancho, alto, estilo) 'F' significa Relleno (Fill)
-    $this->Rect($x, $y1, $lineWidth, 0.5, 'F'); 
-
-    // Línea inferior (gruesa, más clara)
-    $y2 = $y1 + 1.2; // Posición Y, un poco debajo de la primera línea
-    $this->SetFillColor(51, 116, 194); // Color #3374C2 en RGB
-    $this->Rect($x, $y2, $lineWidth, 1, 'F');
-    
-    // --- TEXTO "ANEXO - 4 -" ---
-    // Lo dibujamos después de las líneas para que quede debajo
-    $this->SetY($y2 + 3); // Posicionamos el cursor debajo de las líneas
-    $this->SetFont('helvetica', 'B', 12);
-    
-    // --- LOGO DERECHO ---
-    // Dibujamos este logo al final para asegurarnos que esté en la capa superior si se solapa.
-    $this->Image($image_path_goba, 170, 8, 25, 0, 'JPG', '', 'T', false, 300, 'R', false, false, 0, false, false, false);
-}
-public function Footer() {
-  $this->SetY(-20);
-  $this->SetFont('helvetica', '', 8);
-  $footer_html = '
-  <table border="0" cellpadding="4" cellspacing="0" width="100%" style="font-family: Arial, sans-serif; color: #333333;">
-    <tr>
-      <!-- Columna Izquierda: URL -->
-      <td width="45%" align="center" valign="middle" style="font-size: 10pt;">
-        
-      </td>
-
-      <!-- Columna Central: Línea vertical decorativa -->
-      <td width="10%" align="center" valign="middle">
-        <div style="border-left: 2px solid #C5232A; height: 20px;"></div>
-      </td>
-
-      <!-- Columna Derecha: Información de contacto -->
-      <td width="45%" align="left" valign="middle" style="font-size: 9pt; line-height: 1.5;">
-        <strong>Dirección:</strong> Jr. 28 de Julio N° 383 – Huamanga<br>
-        <strong>Teléfono:</strong> ☎ (066) 31‑2364<br>
-        <strong>Fax:</strong> 📠 (066) 31‑1395 • Anexo 55001
-      </td>
-    </tr>
-  </table>
-';
-  $this->writeHTML($footer_html, true, false, true, false, '');
-}
+if (!isset($ruta[1]) || $ruta[1] == "") {
+    header("location: " . BASE_URL . "movimientos");
+    exit;
 }
 
- $curl = curl_init(); //inicia la sesión cURL
- curl_setopt_array($curl, array(
-     CURLOPT_URL => BASE_URL_SERVER."src/control/Movimiento.php?tipo=buscar_movimiento_id&sesion=".$_SESSION['sesion_id']."&token=".$_SESSION['sesion_token']."&data=".$ruta[1], //url a la que se conecta
-     CURLOPT_RETURNTRANSFER => true, //devuelve el resultado como una cadena del tipo curl_exec
-     CURLOPT_FOLLOWLOCATION => true, //sigue el encabezado que le envíe el servidor
-     CURLOPT_ENCODING => "", // permite decodificar la respuesta y puede ser"identity", "deflate", y "gzip", si está vacío recibe todos los disponibles.
-     CURLOPT_MAXREDIRS => 10, // Si usamos CURLOPT_FOLLOWLOCATION le dice el máximo de encabezados a seguir
-     CURLOPT_TIMEOUT => 30, // Tiempo máximo para ejecutar
-     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, // usa la versión declarada
-     CURLOPT_CUSTOMREQUEST => "GET", // el tipo de petición, puede ser PUT, POST, GET o Delete dependiendo del servicio
-     CURLOPT_HTTPHEADER => array(
-         "x-rapidapi-host: ".BASE_URL_SERVER,
-         "x-rapidapi-key: XXXX"
-     ), //configura las cabeceras enviadas al servicio
- )); //curl_setopt_array configura las opciones para una transferencia cURL
+// Obtener los datos desde el backend por cURL
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_URL => BASE_URL_SERVER . "src/control/Movimiento.php?tipo=buscar_movimiento_id&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'] . "&data=" . $ruta[1],
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_ENCODING => "",
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => "GET",
+    CURLOPT_HTTPHEADER => array(
+        "x-rapidapi-host: " . BASE_URL_SERVER,
+        "x-rapidapi-key: XXXX"
+    ),
+));
+$response = curl_exec($curl);
+$err = curl_error($curl);
+curl_close($curl);
 
- $response = curl_exec($curl); // respuesta generada
- $err = curl_error($curl); // muestra errores en caso de existir
+if ($err) {
+    die("Error en cURL: " . $err);
+} else {
+    $respuesta = json_decode($response);
+}
 
- curl_close($curl); // termina la sesión 
+// -------------------------
+// CONTENIDO HTML
+// -------------------------
+$contenido_pdf = '
+<h2 style="text-align:center; text-transform:uppercase; color:#2c3e50;">REPORTE DE MOVIMIENTOS</h2>
 
- if ($err) {
-     echo "cURL Error #:" . $err; // mostramos el error
- } else {
-    $respuesta = json_decode($response); 
-     // datos para la fechas
-     $new_Date = new DateTime();
-     $dia = $new_Date->format('d');
-     $año = $new_Date->format('Y');
-     $mesNumero = (int)$new_Date->format('n'); 
-
-     $meses = [
-             1 => 'Enero',
-             2 => 'Febrero',
-             3 => 'Marzo',
-             4 => 'Abril',
-             5 => 'Mayo',
-             6 => 'Junio',
-             7 => 'Julio',
-             8 => 'Agosto',
-             9 => 'Septiembre',
-             10 => 'Octubre',
-             11 => 'Noviembre',
-             12 => 'Diciembre'
-         ];
-    //print_r($respuesta);
-    $contenido_pdf='';
-    $contenido_pdf.=' 
-    
-    <html lang="es">
-    <head>
-    
-      <meta charset="UTF-8">
-      <title>Papeleta de Rotación de Bienes</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 40px;
-        }
-        h2 {
-          text-align: center;
-          text-transform: uppercase;
-        }
-        .info {
-          margin-bottom: 20px;
-          line-height: 1.8;
-        }
-        .info b {
-          display: inline-block;
-          width: 80px;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 15px;
-          font-size:9px;
-        }
-        th, td {
-          border: 1px solid black;
-          text-align: center;
-          padding: 6px;
-        }
-        .firma {
-          margin-top: 80px;
-          display: flex;
-          padding: 0 50px;
-        }
-        .firma div {
-          text-align: center;
-        }
-        .fecha {
-          margin-top: 30px;
-          text-align: right;
-        }
-  </style>
-</head>
-<body>
-
-  <h2>PAPELETA DE ROTACIÓN DE BIENES</h2>
-
-  <div class="info">
-  <div><b>ENTIDAD:</b> DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO</div>
-  <div><b>ÁREA:</b> OFICINA DE ADMINISTRACIÓN</div>
-  <div><b>ORIGEN:</b> '.  $respuesta->ambiente_origen->codigo."-".$respuesta->ambiente_origen->detalle . '</div>
-  <div><b>DESTINO:</b> '. $respuesta->ambiente_destino->codigo."-".$respuesta->ambiente_destino->detalle.'</div>
-  <div><b>MOTIVO(*):</b> '. $respuesta->movimiento->descripcion.'</div>
+<div style="margin: bottom 15px;">
+    <p style="margin:6px 0;"><b>ENTIDAD</b>: DIRECCIÓN REGIONAL DE EDUCACIÓN - AYACUCHO</p>
+    <p style="margin:6px 0;"><b>ÁREA</b>: OFICINA DE ADMINISTRACIÓN</p>
+    <p style="margin:6px 0;"><b>ORIGEN</b>: ' . $respuesta->amb_origen->codigo . ' - ' . $respuesta->amb_origen->detalle . '</p>
+    <p style="margin:6px 0;"><b>DESTINO</b>: ' . $respuesta->amb_destino->codigo . ' - ' . $respuesta->amb_destino->detalle . '</p>
+    <p style="margin:6px 0;"><b>MOTIVO (*)</b>: ' . $respuesta->movimiento->descripcion . '</p>
 </div>
-  <table>
+
+<table style="width:100%; border-collapse:collapse; margin-top:15px;" border="1" cellpadding="6">
     <thead>
-      <tr>
-        <th>ITEM</th>
-        <th>CÓDIGO PATRIMONIAL</th>
-        <th>NOMBRE DEL BIEN</th>
-        <th>MARCA</th>
-        <th>COLOR</th>
-        <th>MODELO</th>
-        <th>ESTADO</th>
-      </tr>
+        <tr style="background-color:#eaeaea; color:#2c3e50;">
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">ITEM</th>
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">CÓDIGO<br>PATRIMONIAL</th>
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">NOMBRE DEL BIEN</th>
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">MARCA</th>
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">COLOR</th>
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">MODELO</th>
+            <th style="border:1px solid #ccc; font-size:8px; text-align: center;">ESTADO</th>
+        </tr>
     </thead>
-    <tbody>
-    ';
- 
-  
-    $contador = 1;
+    <tbody>';
+
+if (empty($respuesta->detalle)) {
+    $contenido_pdf .= '
+        <tr>
+            <td colspan="7" style="text-align:center; border:1px solid #ccc; font-size:12.5px;">
+                No se encontraron bienes registrados para este movimiento.
+            </td>
+        </tr>';
+} else {
+    $i = 1;
     foreach ($respuesta->detalle as $bien) {
-    $contenido_pdf.='<tr>';
-    $contenido_pdf .="<td>".$contador ."</td>";
-    $contenido_pdf .="<td>".$bien->cod_patrimonial ."</td>";
-    $contenido_pdf .="<td>".$bien->denominacion ."</td>";
-    $contenido_pdf .="<td>".$bien->marca ."</td>";
-    $contenido_pdf .="<td>".$bien->modelo ."</td>";
-    $contenido_pdf .="<td>".$bien->color ."</td>";
-    $contenido_pdf .="<td>".$bien->estado_conservacion ."</td>";
-    $contenido_pdf .="</tr>";
-    $contador+=1;
-               
-    
-         }
-   
-
-         $contenido_pdf .='  </tbody>
-         </table> 
-       
-         <div class="fecha">
-           Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
-         </div>
-       
-         <div class="firma">
-           <div>
-             ------------------------------<br>
-             ENTREGUÉ CONFORME
-           </div>
-           <div>
-             ------------------------------<br>
-             RECIBÍ CONFORME
-           </div>
-         </div>
-       
-       </body>
-       </html>';
-       
-             
-
-    $pdf =new MYPDF();
-    //set document informacion
-    $pdf->SetCreator(PDF_CREATOR);
-    $pdf->SetAuthor('Anibal yucra');
-    $pdf->SetTitle('Reporte de Movimientos');
-    $pdf->SetSubject('TCPDF Tutorial');
-    $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-    //
-    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-  
-    
-    //asignar salto de pagina
-
-    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-    //set font
-$pdf->SetFont('helvetica', 'B', 12);
-// add a page
-$pdf->AddPage();
-//the html cont
-$pdf->writeHTML($contenido_pdf);
-  //Close and output PDF document
-  ob_clean();
-$pdf->Output('example_006.pdf', 'I');
-
+        $contenido_pdf .= '
+        <tr style="background-color:' . ($i % 2 == 0 ? '#f9f9f9' : '#ffffff') . ';">
+            <td style="border:1px solid #ccc; font-size:8px;">' . $i++ . '</td>
+            <td style="border:1px solid #ccc; font-size:8px;">' . $bien->cod_patrimonial . '</td>
+            <td style="border:1px solid #ccc; font-size:8px;">' . $bien->denominacion . '</td>
+            <td style="border:1px solid #ccc; font-size:8px;">' . $bien->marca . '</td>
+            <td style="border:1px solid #ccc; font-size:8px;">' . $bien->color . '</td>
+            <td style="border:1px solid #ccc; font-size:8px;">' . $bien->modelo . '</td>
+            <td style="border:1px solid #ccc; font-size:8px;">' . $bien->estado_conservacion . '</td>
+        </tr>';
+    }
 }
+$fecha_raw = $respuesta->movimiento->fecha_registro;
+$fecha_obj = DateTime::createFromFormat('Y-m-d H:i:s', $fecha_raw);
+$meses = [
+    1 => "enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre", "diciembre"
+];
+
+if($fecha_obj instanceof DateTime){
+    $dia = $fecha_obj->format('j');
+    $mes = (int)$fecha_obj->format('n');
+    $anio = $fecha_obj->format('Y');
+
+    $fecha_formateada = "$dia de ".$meses[$mes]." de $anio";
+}else{
+    $fecha_formateada = "Fecha inválida";
+}
+
+$contenido_pdf .= '
+    </tbody>
+</table>
+
+<p style="text-align:right; margin-top:35px; font-size:10px;">Ayacucho, '.$dia.' de '.$meses[$mes].' de '.$anio.'</p>
+
+<table style="width:100%; padding: 30px 10px 10px 10px">
+    <tr>
+        <td style="text-align:center;">__________________________<br>ENTREGUÉ CONFORME</td>
+        <td style="text-align:center;">__________________________<br>RECIBÍ CONFORME</td>
+    </tr>
+</table>';
+
+
+
+
+// ----------------------------
+// GENERAR EL PDF CON TCPDF
+// ----------------------------
+require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
+
+class MYPDF extends TCPDF {
+    // Header
+    public function Header() {
+        $this->Image('./src/assets/drea.webp', 15, 10, 30);
+        $this->Image('./src/assets/dr3.jpg', 165, 5, 35);
+        $this->SetY(12);
+        $this->SetFont('helvetica', 'B', 10);
+        $this->Cell(0, 5, 'GOBIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
+        $this->Cell(0, 5, 'DIRECCIÓN REGIONAL DE EDUCACIÓN DE AYACUCHO', 0, 1, 'C');
+        $this->Cell(0, 5, 'DIRECCIÓN DE ADMINISTRACIÓN', 0, 1, 'C');
+    }
+
+    // Footer
+    public function Footer() {
+        $this->SetY(-25);
+        $this->SetFont('helvetica', '', 8);
+        $this->Cell(0, 5, 'www.dreaya.gob.pe', 0, 1, 'R');
+        $this->Cell(0, 5, 'Jr. 28 de Julio N° 383 – Huamanga', 0, 1, 'R');
+        $this->Cell(0, 5, '(066) 31-1395 Anexo 58001', 0, 1, 'R');
+    }
+}
+
+// Crear nueva instancia del PDF
+$pdf = new MYPDF();
+
+// Configuración básica
+$pdf->SetCreator(PDF_CREATOR);
+$pdf->SetAuthor('Alexis Valdivia');
+$pdf->SetTitle('Reporte de Movimientos');
+
+$pdf->SetMargins(15, 40, 15); // Ajustado el margen superior
+$pdf->SetAutoPageBreak(TRUE, 30); // Espacio desde el pie
+$pdf->SetFont('helvetica', '', 10);
+
+// Añadir una página
+$pdf->AddPage();
+
+// Escribir HTML
+$pdf->writeHTML($contenido_pdf, true, false, true, false, '');
+
+// Salida del PDF
+$pdf->Output('reporte_movimiento.pdf', 'I');
+//============================================================+
+// END OF FILE
+//============================================================+
+
+
+
+
+
+
