@@ -164,7 +164,5 @@ $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 // Salida del PDF
 ob_end_clean();
 $pdf->Output('archivo.pdf', 'I');
-//============================================================+
-// END OF FILE
-//============================================================+
+
 ?>

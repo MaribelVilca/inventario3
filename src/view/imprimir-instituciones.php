@@ -153,9 +153,6 @@ $contenido_pdf .= '
 // Escribir HTML
 $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 
-// Salida del PDF
 $pdf->Output('reporte_instituciones.pdf', 'I');
-//============================================================+
-// END OF FILE
-//============================================================+
+
 ?>
