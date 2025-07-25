@@ -133,13 +133,15 @@ class MYPDF extends TCPDF {
     }
 
     // Footer
-    public function Footer() {
-        $this->SetY(-25);
-        $this->SetFont('helvetica', '', 8);
-        $this->Cell(0, 5, 'www.dreaya.gob.pe', 0, 1, 'R');
-        $this->Cell(0, 5, 'Jr. 28 de Julio N° 383 – Huamanga', 0, 1, 'R');
-        $this->Cell(0, 5, '(066) 31-1395 Anexo 58001', 0, 1, 'R');
-    }
+    public function Footer()
+{
+    // Posicionar a 250 mm desde la parte superior
+    $this->SetY(250);
+    $this->SetFont('helvetica', '', 8);
+    $this->Cell(0, 5, 'www.dreaya.gob.pe', 0, 1, 'R');
+    $this->Cell(0, 5, 'Jr. 28 de Julio N° 383 – Huamanga', 0, 1, 'R');
+    $this->Cell(0, 5, '(066) 31-1395 Anexo 58001', 0, 1, 'R');
+}
 }
 
 // Crear nueva instancia del PDF

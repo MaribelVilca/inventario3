@@ -47,8 +47,6 @@ class SessionModel
         }
     }
 
-
-
     public function buscarSesionLoginById($id)
     {
         $sql = $this->conexion->query("SELECT * FROM sesiones WHERE id='$id'");

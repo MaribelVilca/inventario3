@@ -1,5 +1,5 @@
 <?php
-// Asegura la zona horaria correcta
+
 date_default_timezone_set('America/Lima');
 
 // Obtener los datos desde el backend por cURL
@@ -34,9 +34,6 @@ if ($err) {
     }
 }
 
-// ----------------------------
-// GENERAR EL PDF CON TCPDF
-// ----------------------------
 require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Clase personalizada para el PDF
@@ -53,13 +50,15 @@ class MYPDF extends TCPDF {
     }
 
     // Footer
-    public function Footer() {
-        $this->SetY(-25);
-        $this->SetFont('helvetica', '', 8);
-        $this->Cell(0, 5, 'www.dreaya.gob.pe', 0, 1, 'R');
-        $this->Cell(0, 5, 'Jr. 28 de Julio N° 383 – Huamanga', 0, 1, 'R');
-        $this->Cell(0, 5, '(066) 31-1395 Anexo 58001', 0, 1, 'R');
-    }
+    public function Footer()
+{
+    // Posicionar a 250 mm desde la parte superior
+    $this->SetY(250);
+    $this->SetFont('helvetica', '', 8);
+    $this->Cell(0, 5, 'www.dreaya.gob.pe', 0, 1, 'R');
+    $this->Cell(0, 5, 'Jr. 28 de Julio N° 383 – Huamanga', 0, 1, 'R');
+    $this->Cell(0, 5, '(066) 31-1395 Anexo 58001', 0, 1, 'R');
+}
 }
 
 // Crear nueva instancia del PDF
@@ -152,12 +151,8 @@ $contenido_pdf .= '
     </tr>
 </table>';
 
-// Escribir HTML
 $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 
-// Salida del PDF
 $pdf->Output('reporte_ambientes.pdf', 'I');
-//============================================================+
-// END OF FILE
-//============================================================+
+
 ?>
