@@ -69,12 +69,11 @@ $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 
 // Configuración básica
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Alexis Valdivia');
+$pdf->SetAuthor('Maribel vilca tincopa');
 $pdf->SetTitle('Reporte de Bienes');
 $pdf->SetMargins(15, 40, 15); // Ajustado el margen superior
 $pdf->SetAutoPageBreak(TRUE, 30); // Espacio desde el pie
 $pdf->SetFont('helvetica', '', 10);
-
 // Añadir una página
 $pdf->AddPage();
 
