@@ -168,7 +168,8 @@ $contenido_pdf .='  </tbody>
 // Clase personalizada para agregar encabezado y pie de página
 class MYPDF extends TCPDF {
     
-  
+  private $logo_left_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnRyplBMCnfQAKteOxoWIf4nQsLmsdxvts2Q&s'; 
+  private $logo_right_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVdxkNoyHgePcrwP7lKmpMspDuWsHoF0D9Ww&s';
 
   public function setLogoUrls($left_url, $right_url = null) {
       $this->logo_left_url = $left_url;
